@@ -1,0 +1,46 @@
+# dependencies
+node_modules/
+.pnpm-store/
+
+# build output
+dist/
+.next/
+out/
+*.tsbuildinfo
+
+# turbo
+.turbo/
+
+# testing
+coverage/
+playwright-report/
+test-results/
+.playwright/
+
+# env
+.env
+.env.local
+.env.*.local
+
+# logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# os / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# docker volumes
+.data/
+
+# screenshots are committed deliverables, so they are NOT ignored
+
+# local agent + authoring scratch (not part of the product)
+.claude/
+claude_code_*.md
+CLAUDE_CODE_MASTER_PROMPT_*.md
