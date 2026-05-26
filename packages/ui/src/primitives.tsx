@@ -76,7 +76,7 @@ export function Panel({ title, actions, bare, className, children, ...props }: P
           {actions && <div className="flex items-center gap-1">{actions}</div>}
         </header>
       )}
-      <div className={cn('min-h-0 flex-1', !bare && 'p-3')}>{children}</div>
+      <div className={cn('min-h-0 flex-1 overflow-hidden', !bare && 'p-3')}>{children}</div>
     </Card>
   );
 }

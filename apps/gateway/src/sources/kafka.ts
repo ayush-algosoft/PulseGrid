@@ -15,6 +15,7 @@ import { Kafka, type Consumer } from 'kafkajs';
 
 import { type FeedEvent } from '../market-state.js';
 import { kafkaConnected } from '../metrics.js';
+
 import { type MarketSource } from './source.js';
 
 const PARSERS = {

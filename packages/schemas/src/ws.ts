@@ -1,11 +1,11 @@
 import { z } from 'zod';
 
 import { CandleSchema } from './candle.js';
+import { CandleEventSchema } from './candle.js';
 import { AssetSchema, ScenarioSchema, type Timeframe } from './common.js';
 import { MarketMetricsEventSchema } from './metrics.js';
 import { NewsEventSchema } from './news.js';
 import { OrderBookEventSchema } from './orderbook.js';
-import { CandleEventSchema } from './candle.js';
 import { TickEventSchema } from './tick.js';
 import { TradeEventSchema } from './trade.js';
 

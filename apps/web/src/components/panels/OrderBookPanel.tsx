@@ -18,18 +18,20 @@ export function OrderBookPanel({ symbol }: { symbol: string }) {
 
   return (
     <Panel title={`Order Book · ${symbol}`} bare>
-      <AsyncContent loading={!book} connection={connection} emptyTitle="No depth">
-        {book && (
-          <OrderBookLadder
-            bids={book.bids}
-            asks={book.asks}
-            depth={depth}
-            formatPrice={formatPrice}
-            formatSize={formatCompact}
-            reducedMotion={reducedMotion}
-          />
-        )}
-      </AsyncContent>
+      <div className="h-full overflow-auto">
+        <AsyncContent loading={!book} connection={connection} emptyTitle="No depth">
+          {book && (
+            <OrderBookLadder
+              bids={book.bids}
+              asks={book.asks}
+              depth={depth}
+              formatPrice={formatPrice}
+              formatSize={formatCompact}
+              reducedMotion={reducedMotion}
+            />
+          )}
+        </AsyncContent>
+      </div>
     </Panel>
   );
 }

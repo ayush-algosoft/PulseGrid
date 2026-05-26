@@ -22,8 +22,9 @@ export default function WatchlistsPage() {
 
   const assets = useAssets();
   const active = lists.find((l) => l.id === activeId) ?? lists[0];
-  const symbols = active?.symbols ?? [];
-  useChannels(useMemo(() => ['ticks:*', ...symbols.map((s) => `candles:${s}:1m`)], [symbols]));
+  const symbols = useMemo(() => active?.symbols ?? [], [active]);
+  const channels = useMemo(() => ['ticks:*', ...symbols.map((s) => `candles:${s}:1m`)], [symbols]);
+  useChannels(channels);
 
   const tickBySymbol = useMarketStore((s) => s.tickBySymbol);
   const candlesByKey = useMarketStore((s) => s.candlesByKey);

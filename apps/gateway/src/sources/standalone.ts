@@ -12,6 +12,7 @@ import {
 import { MarketDeriver, MarketEngine, type Logger } from '@pulsegrid/utils';
 
 import { type FeedEvent, type MarketState } from '../market-state.js';
+
 import { type MarketSource } from './source.js';
 
 /**

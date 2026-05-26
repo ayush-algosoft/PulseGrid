@@ -1,7 +1,8 @@
-import { type EngineStatus } from '@pulsegrid/schemas';
-import { MarketDeriver, MarketEngine } from '@pulsegrid/utils';
-import { EVENT_VERSION, GLOBAL_SYMBOL } from '@pulsegrid/schemas';
 import { randomUUID } from 'node:crypto';
+
+import { type EngineStatus } from '@pulsegrid/schemas';
+import { EVENT_VERSION, GLOBAL_SYMBOL } from '@pulsegrid/schemas';
+import { MarketDeriver, MarketEngine } from '@pulsegrid/utils';
 import { describe, expect, it } from 'vitest';
 
 import { MarketState, type FeedEvent } from './market-state.js';

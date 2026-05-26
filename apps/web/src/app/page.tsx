@@ -35,10 +35,10 @@ export default function DashboardPage() {
       </div>
 
       <div className="col-span-12 flex flex-col gap-3 xl:col-span-3">
-        <div className="h-[360px] [&>*]:h-full">
+        <div className="h-[452px] [&>*]:h-full">
           <OrderBookPanel symbol={focus} />
         </div>
-        <div className="h-[360px] [&>*]:h-full">
+        <div className="h-[300px] [&>*]:h-full">
           <TopMoversPanel />
         </div>
       </div>

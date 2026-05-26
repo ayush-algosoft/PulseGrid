@@ -29,8 +29,9 @@ export function TopMoversPanel() {
 
   return (
     <Panel title="Top Movers" bare>
-      <AsyncContent loading={!metrics} connection={connection} empty={!!metrics && metrics.topByChange.length === 0}>
-        {metrics && (
+      <div className="h-full overflow-auto">
+        <AsyncContent loading={!metrics} connection={connection} empty={!!metrics && metrics.topByChange.length === 0}>
+          {metrics && (
           <div className="grid grid-cols-1 gap-2 p-2">
             <div>
               <div className="mb-1 px-2 text-2xs uppercase tracking-wider text-up">Gainers</div>
@@ -49,8 +50,9 @@ export function TopMoversPanel() {
               </div>
             </div>
           </div>
-        )}
-      </AsyncContent>
+          )}
+        </AsyncContent>
+      </div>
     </Panel>
   );
 }

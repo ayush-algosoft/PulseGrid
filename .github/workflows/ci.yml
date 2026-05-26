@@ -1,0 +1,72 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Lint · Typecheck · Test · Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm build
+
+  e2e:
+    name: Playwright E2E
+    runs-on: ubuntu-latest
+    needs: quality
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @pulsegrid/web exec playwright install --with-deps chromium
+      - run: pnpm --filter @pulsegrid/web build
+
+      - name: Start gateway (standalone) + web
+        run: |
+          GATEWAY_MODE=standalone pnpm --filter @pulsegrid/gateway start &
+          echo "GATEWAY_PID=$!" >> "$GITHUB_ENV"
+          pnpm --filter @pulsegrid/web start &
+          echo "WEB_PID=$!" >> "$GITHUB_ENV"
+          npx wait-on http://localhost:3000 tcp:localhost:4001 --timeout 60000
+
+      - name: Run E2E
+        run: pnpm --filter @pulsegrid/web exec playwright test
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: apps/web/playwright-report
+          retention-days: 7

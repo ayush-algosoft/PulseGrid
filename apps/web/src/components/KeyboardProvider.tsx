@@ -43,12 +43,12 @@ export function KeyboardProvider({ children }: { children: React.ReactNode }) {
         }
       }
 
-      if (e.key === '/') {
+      if (e.key === '/' && !e.shiftKey) {
         e.preventDefault();
         ui().setPalette(true);
         return;
       }
-      if (e.key === '?') {
+      if (e.key === '?' || (e.key === '/' && e.shiftKey)) {
         e.preventDefault();
         ui().setShortcuts(!useUiStore.getState().shortcutsOpen);
         return;

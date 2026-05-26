@@ -13,6 +13,7 @@ import {
 
 import { ASSETS } from './assets.js';
 import { clampValue, quantize } from './decimal.js';
+import { OrderBookSim } from './orderbook-sim.js';
 import {
   initialRegime,
   REGIME_EFFECT,
@@ -20,9 +21,8 @@ import {
   type Regime,
   type RegimeState,
 } from './regime.js';
-import { OrderBookSim } from './orderbook-sim.js';
-import { SCENARIOS, SHOWCASE_REGIME_BY_INDEX } from './scenarios.js';
 import { SeededRng } from './rng.js';
+import { SCENARIOS, SHOWCASE_REGIME_BY_INDEX } from './scenarios.js';
 
 /** A fixed simulated market epoch; pinning it makes runs byte-reproducible. */
 export const DEFAULT_START_TIME = 1_700_000_000_000;

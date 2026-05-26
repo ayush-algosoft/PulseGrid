@@ -1,4 +1,9 @@
-import { createServer, type Server } from 'node:http';
+import {
+  createServer,
+  type IncomingMessage,
+  type Server,
+  type ServerResponse,
+} from 'node:http';
 
 import {
   ClientMessageSchema,
@@ -158,7 +163,7 @@ export class GatewayServer {
     this.wss = new WebSocketServer({ server: this.http, path: '/stream' });
   }
 
-  private handleHttp(req: import('node:http').IncomingMessage, res: import('node:http').ServerResponse): void {
+  private handleHttp(req: IncomingMessage, res: ServerResponse): void {
     if (req.url === '/healthz') {
       res.writeHead(this.source.isLive() ? 200 : 503, { 'content-type': 'application/json' });
       res.end(JSON.stringify({ status: this.source.isLive() ? 'ok' : 'down' }));
