@@ -1,0 +1,28 @@
+{
+  "name": "@pulsegrid/aggregator",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "start": "tsx src/index.ts",
+    "build": "tsc --noEmit",
+    "lint": "eslint src",
+    "typecheck": "tsc --noEmit",
+    "clean": "rimraf dist .turbo"
+  },
+  "dependencies": {
+    "@pulsegrid/schemas": "workspace:*",
+    "@pulsegrid/utils": "workspace:*",
+    "kafkajs": "^2.2.4",
+    "prom-client": "^15.1.3",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@pulsegrid/config": "workspace:*",
+    "@types/node": "^22.7.4",
+    "eslint": "^8.57.1",
+    "tsx": "^4.19.1",
+    "typescript": "^5.5.4"
+  }
+}
