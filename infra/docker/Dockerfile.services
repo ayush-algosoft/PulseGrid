@@ -1,0 +1,15 @@
+# Shared image for the Node services (gateway, simulator, aggregator).
+# They run directly from TypeScript via tsx, so no compile step is required.
+FROM node:20-bookworm-slim
+
+ENV PNPM_HOME=/pnpm
+ENV PATH=$PNPM_HOME:$PATH
+RUN corepack enable
+
+WORKDIR /app
+COPY . .
+RUN pnpm install --frozen-lockfile
+
+# The concrete service is selected by the `command` in docker-compose.yml,
+# e.g. `pnpm --filter @pulsegrid/gateway start`.
+CMD ["node", "--version"]

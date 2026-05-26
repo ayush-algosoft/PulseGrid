@@ -1,0 +1,126 @@
+# One command brings up the whole platform:
+#   docker compose up --build
+# Redpanda + auto-created topics + simulator + aggregator + gateway + web +
+# Prometheus + Grafana. No manual steps, no hand-edited env files.
+name: pulsegrid
+
+services:
+  redpanda:
+    image: redpandadata/redpanda:v24.2.7
+    command:
+      - redpanda
+      - start
+      - --smp=1
+      - --memory=1G
+      - --overprovisioned
+      - --node-id=0
+      - --check=false
+      - --kafka-addr=internal://0.0.0.0:9092,external://0.0.0.0:19092
+      - --advertise-kafka-addr=internal://redpanda:9092,external://localhost:19092
+    ports:
+      - '19092:19092'
+    healthcheck:
+      test: ['CMD-SHELL', 'rpk cluster health | grep -q "Healthy:.*true"']
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  # One-shot: create every topic up front so nothing depends on auto-create.
+  topic-init:
+    image: redpandadata/redpanda:v24.2.7
+    depends_on:
+      redpanda:
+        condition: service_healthy
+    entrypoint: ['/bin/sh', '-c']
+    command:
+      - |
+        for t in market.ticks market.orderbook market.trades market.candles market.metrics market.news; do
+          rpk topic create "$$t" --brokers redpanda:9092 -p 1 -r 1 || true
+        done
+    restart: 'no'
+
+  simulator:
+    build:
+      context: .
+      dockerfile: infra/docker/Dockerfile.services
+    command: ['pnpm', '--filter', '@pulsegrid/simulator', 'start']
+    environment:
+      KAFKA_BROKERS: redpanda:9092
+      SIM_SEED: '42'
+      SIM_SCENARIO: showcase
+      SIM_TICK_MS: '250'
+      SIM_METRICS_PORT: '9103'
+      NODE_ENV: production
+    depends_on:
+      topic-init:
+        condition: service_completed_successfully
+
+  aggregator:
+    build:
+      context: .
+      dockerfile: infra/docker/Dockerfile.services
+    command: ['pnpm', '--filter', '@pulsegrid/aggregator', 'start']
+    environment:
+      KAFKA_BROKERS: redpanda:9092
+      AGG_METRICS_PORT: '9102'
+      SIM_SCENARIO: showcase
+      NODE_ENV: production
+    depends_on:
+      topic-init:
+        condition: service_completed_successfully
+
+  gateway:
+    build:
+      context: .
+      dockerfile: infra/docker/Dockerfile.services
+    command: ['pnpm', '--filter', '@pulsegrid/gateway', 'start']
+    environment:
+      GATEWAY_MODE: kafka
+      KAFKA_BROKERS: redpanda:9092
+      GATEWAY_WS_PORT: '4001'
+      METRICS_PORT: '9101'
+      SIM_SCENARIO: showcase
+      NODE_ENV: production
+    ports:
+      - '4001:4001'
+      - '9101:9101'
+    depends_on:
+      topic-init:
+        condition: service_completed_successfully
+
+  web:
+    build:
+      context: .
+      dockerfile: infra/docker/Dockerfile.web
+      args:
+        NEXT_PUBLIC_GATEWAY_WS_URL: ws://localhost:4001/stream
+    ports:
+      - '3000:3000'
+    depends_on:
+      - gateway
+
+  prometheus:
+    image: prom/prometheus:v2.54.1
+    volumes:
+      - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - '9090:9090'
+    depends_on:
+      - gateway
+      - aggregator
+      - simulator
+
+  grafana:
+    image: grafana/grafana:11.2.2
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_AUTH_ANONYMOUS_ENABLED: 'true'
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Admin
+    volumes:
+      - ./infra/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./infra/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    ports:
+      - '3001:3000'
+    depends_on:
+      - prometheus

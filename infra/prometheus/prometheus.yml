@@ -1,0 +1,23 @@
+global:
+  scrape_interval: 5s
+  evaluation_interval: 5s
+
+scrape_configs:
+  - job_name: gateway
+    static_configs:
+      - targets: ['gateway:9101']
+        labels: { service: gateway }
+
+  - job_name: aggregator
+    static_configs:
+      - targets: ['aggregator:9102']
+        labels: { service: aggregator }
+
+  - job_name: simulator
+    static_configs:
+      - targets: ['simulator:9103']
+        labels: { service: simulator }
+
+  - job_name: prometheus
+    static_configs:
+      - targets: ['localhost:9090']

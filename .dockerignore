@@ -1,0 +1,13 @@
+**/node_modules
+**/.next
+**/.turbo
+**/dist
+**/coverage
+.git
+.claude
+**/*.log
+docs/screenshots
+playwright-report
+test-results
+CLAUDE_CODE_MASTER_PROMPT_*.md
+claude_code_*.md

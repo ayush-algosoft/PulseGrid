@@ -1,0 +1,19 @@
+# Next.js terminal UI. Built at image time; NEXT_PUBLIC_* must be baked in.
+FROM node:20-bookworm-slim
+
+ENV PNPM_HOME=/pnpm
+ENV PATH=$PNPM_HOME:$PATH
+RUN corepack enable
+
+WORKDIR /app
+COPY . .
+RUN pnpm install --frozen-lockfile
+
+# The browser connects to the gateway on the host, so default to localhost.
+ARG NEXT_PUBLIC_GATEWAY_WS_URL=ws://localhost:4001/stream
+ENV NEXT_PUBLIC_GATEWAY_WS_URL=$NEXT_PUBLIC_GATEWAY_WS_URL
+ENV NEXT_TELEMETRY_DISABLED=1
+RUN pnpm --filter @pulsegrid/web build
+
+EXPOSE 3000
+CMD ["pnpm", "--filter", "@pulsegrid/web", "start"]
