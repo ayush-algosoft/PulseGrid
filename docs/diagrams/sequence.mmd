@@ -1,0 +1,20 @@
+%% End-to-end sequence: a tick becomes a rendered frame
+sequenceDiagram
+  participant S as Simulator
+  participant K as Redpanda
+  participant A as Aggregator
+  participant G as Gateway
+  participant W as Web (Zustand)
+  participant R as React (rAF)
+
+  S->>K: produce tick (market.ticks)
+  S->>K: produce trades (market.trades)
+  K->>A: consume tick + trades
+  A->>A: build candles + stats (pure utils)
+  A->>K: produce candle / metrics
+  K->>G: consume all topics
+  G->>G: route by channel index, coalesce per client
+  G-->>W: batched frame (≈40Hz)
+  W->>W: applyBatch (one store write)
+  R->>W: read narrow selector on next frame
+  R-->>R: paint changed cells only

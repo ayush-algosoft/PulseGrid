@@ -1,0 +1,24 @@
+%% Deployment topology — docker compose
+flowchart TB
+  subgraph host["Developer machine — docker compose"]
+    rp[("redpanda:9092\nexternal :19092")]
+    init["topic-init\n(one-shot rpk create)"]
+    sim["simulator"]
+    agg["aggregator"]
+    gw["gateway\n:4001 ws · :9101 metrics"]
+    web["web\n:3000"]
+    prom["prometheus\n:9090"]
+    graf["grafana\n:3001"]
+  end
+
+  browser["Browser"]
+
+  init --> rp
+  sim --> rp
+  agg --> rp
+  gw --> rp
+  browser -- ":3000" --> web
+  browser -- ":4001 ws" --> gw
+  browser -- ":3001" --> graf
+  prom --> gw & agg & sim
+  graf --> prom

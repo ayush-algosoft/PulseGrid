@@ -1,0 +1,19 @@
+%% Kafka topic flow — producers and consumers
+flowchart LR
+  sim["Simulator"]
+  agg["Aggregator"]
+  gw["Gateway"]
+
+  t1[["market.ticks\nkey: symbol"]]
+  t2[["market.orderbook\nkey: symbol"]]
+  t3[["market.trades\nkey: symbol"]]
+  t4[["market.candles\nkey: symbol:tf"]]
+  t5[["market.metrics\nkey: global"]]
+  t6[["market.news\nkey: symbol"]]
+
+  sim --> t1 & t2 & t3 & t6
+  t1 --> agg
+  t3 --> agg
+  agg --> t4 & t5
+
+  t1 & t2 & t3 & t4 & t5 & t6 --> gw

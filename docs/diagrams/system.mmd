@@ -1,0 +1,28 @@
+%% System architecture — services and shared contracts
+flowchart LR
+  subgraph packages["Shared contracts (/packages)"]
+    schemas["schemas (Zod)"]
+    types["types"]
+    utils["utils (engine, deriver, math)"]
+    ui["ui (tokens + components)"]
+  end
+
+  sim["Simulator\n(market engine)"]
+  agg["Aggregator\n(candles + metrics)"]
+  gw["WebSocket Gateway\n(subscription fanout)"]
+  web["Web (Next.js)\nterminal UI"]
+
+  redpanda[("Redpanda\nKafka topics")]
+
+  sim -- "ticks · orderbook · trades · news" --> redpanda
+  redpanda -- "ticks + trades" --> agg
+  agg -- "candles · metrics" --> redpanda
+  redpanda -- "all topics" --> gw
+  gw <== "WebSocket\nsubscriptions" ==> web
+
+  schemas -. imported by .-> sim & agg & gw & web
+  utils -. imported by .-> sim & agg & gw
+  ui -. imported by .-> web
+
+  prom["Prometheus"] --> graf["Grafana"]
+  sim & agg & gw -. "/metrics" .-> prom
