@@ -30,6 +30,9 @@ true 60 fps feel. Everything is one `docker compose up`.
 
 ## Quick start
 
+> Step-by-step instructions for a fresh machine — both paths, prerequisites,
+> verification and troubleshooting — are in **[RUNNING.md](RUNNING.md)**.
+
 **One command — the canonical path** (Docker + pnpm installed):
 
 ```bash
